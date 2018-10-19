@@ -1,10 +1,13 @@
 package com.berry.springbootrebbitmqdemo.api;
 
-import com.berry.springbootrebbitmqdemo.service.FanoutSender;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Random;
 
 /**
  * @author HiCooper
@@ -16,26 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestSender {
 
     @Autowired
-    private FanoutSender fanoutSender;
-
-
-    @Autowired
     private AmqpTemplate rabbitTemplate;
 
-    @RequestMapping("/send1")
-    public String  topicSend1() {
-//        topicSend1String context = "my topic 1";
-//        System.out.println("发送者说 : " + context);
-//        this.rabbitTemplate.convertAndSend("exchange", "topic.message", context);
-        String context = "hi, fanout msg ";
-        fanoutSender.send(context);
-        return context;
-    }
-    @RequestMapping("/send2")
-    public String topicSend2() {
-        String context = "my topic 2";
-        System.out.println("发送者说 : " + context);
-        this.rabbitTemplate.convertAndSend("exchange", "topic.messages", context);
-        return  context;
+
+    @GetMapping("/topicExchange")
+    public void topicSend2(@RequestParam(name = "message") String message) {
+        this.rabbitTemplate.convertAndSend("topicExchange", "topic.single", message);
     }
 }

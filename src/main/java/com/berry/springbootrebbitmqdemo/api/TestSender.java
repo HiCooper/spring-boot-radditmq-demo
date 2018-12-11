@@ -22,8 +22,48 @@ public class TestSender {
     private AmqpTemplate rabbitTemplate;
 
 
-    @GetMapping("/topicExchange")
-    public void topicSend2(@RequestParam(name = "message") String message) {
-        this.rabbitTemplate.convertAndSend("topicExchange", "topic.single", message);
+    /**
+     * 模式匹配 能匹配到 topic.a 路由的队列
+     */
+    @GetMapping("/topicA")
+    public void topicA() {
+        System.out.println("这里只有topicA收到消息");
+        this.rabbitTemplate.convertAndSend("topicExchange", "topic.a", "test-message");
+    }
+
+    /**
+     * 模式匹配 能匹配到 topic.b 路由的队列
+     */
+    @GetMapping("/topic")
+    public void topic() {
+        System.out.println("这里topicA 和 topicB 都应该收到消息");
+        this.rabbitTemplate.convertAndSend("topicExchange", "topic.b", "test-message");
+    }
+
+    /**
+     * 广播 fanoutExchange 的所有队列
+     */
+    @GetMapping("/fanout")
+    public void fanout() {
+        System.out.println("这里fanoutA 和 fanoutB 都应该收到消息");
+        this.rabbitTemplate.convertAndSend("fanoutExchange","","test-message");
+    }
+
+    /**
+     * 直连 directExchange 的 A队列
+     */
+    @GetMapping("/directA")
+    public void directA() {
+        System.out.println("这里只有directA收到消息");
+        this.rabbitTemplate.convertAndSend("directExchange","directA", "test-message");
+    }
+
+    /**
+     * 直连 directExchange 的 B队列
+     */
+    @GetMapping("/directB")
+    public void directB() {
+        System.out.println("这里只有directB收到消息");
+        this.rabbitTemplate.convertAndSend("directExchange","directB", "test-message");
     }
 }
